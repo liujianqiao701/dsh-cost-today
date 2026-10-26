@@ -1,0 +1,7 @@
+# dsh-cost-today bundle patch: 挂载「今日花费」插件。
+#
+# 宿主侧（host）注册：`cost_today` 工具、`/cost` 命令，
+# 以及 GUI 面板的数据路由 `/api/dsh-cost-today/report`。
+- insert:
+    - id: cost-today
+      name: 'dsh-cost-today'
