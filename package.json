@@ -30,7 +30,7 @@
                   "README.md"
               ],
     "scripts":  {
-                    "test":  "node test/ledger.test.mjs \u0026\u0026 node test/pricing.test.mjs \u0026\u0026 node test/meter.test.mjs \u0026\u0026 node test/store.test.mjs \u0026\u0026 node test/capture.test.mjs \u0026\u0026 node test/client.test.mjs"
+                    "test":  "node test/ledger.test.mjs \u0026\u0026 node test/pricing.test.mjs \u0026\u0026 node test/meter.test.mjs \u0026\u0026 node test/store.test.mjs \u0026\u0026 node test/capture.test.mjs \u0026\u0026 node test/cursor.test.mjs \u0026\u0026 node test/client.test.mjs"
                 },
     "dsh":  {
                 "bundle":  {
