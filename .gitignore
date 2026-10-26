@@ -1,0 +1,4 @@
+# dsh-file-drop 之类的插件会在工作区里生成辅助文件，不属于本仓库
+.dsh-file-drop/
+node_modules/
+*.log
