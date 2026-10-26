@@ -3,7 +3,7 @@
 DSH 今日花费插件：把**「今天花了多少钱」**显示在输入框下方与会话头部，点开是明细面板。
 
 ```
-💰 今日 ¥57.22 · 累计 ¥732.48     ← 输入框下方；会话头部另有 💰 ¥57.22
+💰 今日 ¥57.22 / 累计 ¥732.48   ← 侧边栏底部（**始终可见**，不用打开会话）
    ↓ 点开
 ┌─ 💰 今日花费                              [关闭] ─┐
 │  ¥57.22                                          │
@@ -63,7 +63,7 @@ npm install "link:<本仓库路径>"
 | 工具 `cost_today` | 参数 `day`（YYYY-MM-DD，省略=今天）、`limit`。消耗一个模型回合 |
 | 命令 `/cost` | 同上，**不消耗模型回合**；可带日期 `/cost 2026-10-25` |
 | 数据路由 | `GET /api/dsh-cost-today/report[?day=YYYY-MM-DD]` → JSON |
-| GUI | 输入框下方一行 + 会话头部徽标，点开面板；每 60 秒自动刷新 |
+| GUI | **侧边栏底部**（始终可见）+ 输入框下方一行 + 会话头部徽标，点开面板；每 60 秒自动刷新 |
 
 ## 口径（重要）
 
@@ -81,6 +81,7 @@ npm install "link:<本仓库路径>"
 | 坑 | 后果 |
 | --- | --- |
 | 客户端没导出 `inject: ['slots']` | cordis 在 slots 挂载前就调 `apply` → 注册被静默跳过，**没 UI 也没报错** |
+| 只往「会话内」插槽注册 | 首页/空态没有这些插槽 → 用户重启后以为插件没生效。必须同时注册 `sidebar.footer.action` |
 | 用主题 CSS 变量配硬编码回退取色 | `--dsw-alias-bg-primary` 未定义→白底，`--dsw-alias-label-primary` 暗色下近白→**白底白字** |
 | 用 `toISOString()` 算「今天」 | UTC 差 8 小时，凌晨的账算到前一天 |
 | 声明了 `input`/`cacheRead` 却漏了 `output` | `ReferenceError: output is not defined` —— 被单测当场抓住 |
