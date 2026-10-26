@@ -5,10 +5,12 @@ import {
   PEAK_WINDOWS_UTC,
   OFF_PEAK,
   MODEL_ALIASES,
+  PEAK_MULTIPLIER,
   beijingDayKey,
   isPeak,
   normalizeModel,
   priceCall,
+  priceTable,
   unitPrice,
 } from '../lib/pricing.js'
 
@@ -118,4 +120,30 @@ test('字符串 token 数（"1234"）能算，不当成 0', () => {
   const at = Date.UTC(2026, 9, 26, 12)
   const result = priceCall({ model: 'deepseek-flash', at, cacheMiss: '1000000', cacheHit: '0', output: '0' }, {})
   assert.equal(Number(result.costUsd.toFixed(6)), 0.15)
+})
+
+test('priceTable 的峰时价 = 平时价 × PEAK_MULTIPLIER（界面标价与实算同源）', () => {
+  const table = priceTable()
+  assert.ok(table.length >= 1)
+  for (const row of table) {
+    for (const key of ['cacheHit', 'cacheMiss', 'output']) {
+      assert.equal(row.peak[key], row.offPeak[key] * PEAK_MULTIPLIER, `${row.model}.${key} 的峰时价不对`)
+    }
+  }
+})
+
+test('priceTable 报的价和 unitPrice 真正算出来的价一致（防两套数）', () => {
+  // 峰时：UTC 03:00 周二；平时：UTC 12:00 周二 —— 两边都必须对得上
+  const peakAt = new Date(Date.UTC(2026, 9, 27, 3, 0, 0))
+  const offAt = new Date(Date.UTC(2026, 9, 27, 12, 0, 0))
+  for (const row of priceTable()) {
+    const peak = unitPrice(row.model, peakAt)
+    const off = unitPrice(row.model, offAt)
+    assert.equal(peak.peak, true)
+    assert.equal(off.peak, false)
+    for (const key of ['cacheHit', 'cacheMiss', 'output']) {
+      assert.equal(peak[key], row.peak[key], `${row.model}.${key} 峰时：表里和算出来不一致`)
+      assert.equal(off[key], row.offPeak[key], `${row.model}.${key} 平时：表里和算出来不一致`)
+    }
+  }
 })
