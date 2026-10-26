@@ -59,6 +59,8 @@ ctx.on('session/event', (session, event) => { /* event.data.usage 就是这次�
 来源：<https://api-docs.deepseek.com/quick_start/pricing>（`PRICE_CHECKED_AT` 记在 `lib/pricing.js` 里，改价时改那一处）。
 未知模型按 flash 价计但会打 `unknownModel` 标记，**不猜**。
 
+**这张表在面板上就能看到**（侧边栏底部点开 → 「单价（每百万 token，美元）」），而且面板显示的和实际算钱的是**同一份数据**（priceTable() 由 OFF_PEAK × PEAK_MULTIPLIER 推出，测试里交叉比对过），不会出现标价与实际不符。
+
 ### 从旧的 cost-meter 账本迁过来
 
 第一次启动时**一次性导入** cost-meter 的历史（`days` 逐日搬，已有的日子不覆盖、不重复累加），
@@ -123,11 +125,11 @@ npm install "link:<本仓库路径>"
 
 ## 测试
 
-`npm test` 跑全部 65 项（node:test，零依赖）：
+`npm test` 跑全部 67 项（node:test，零依赖）：
 
 ```bash
 node test/ledger.test.mjs    # 12 项：时区、币种换算、命中率、今日/本月/累计、缺数据、格式化
-node test/pricing.test.mjs   # 11 项：官方单价、峰谷窗口边界、周末/节假日、未知模型、别名
+node test/pricing.test.mjs   # 13 项：官方单价、峰谷边界、周末/节假日、未知模型、别名、**界面标价与实算同源**
 node test/meter.test.mjs     # 11 项：去重、日记录累加、幂等导入、外部计量器复活
 node test/store.test.mjs     #  8 项：建账本、导入一次、坏文件、原子写、端到端
 node test/capture.test.mjs   # 14 项：usage 取法（含 stream 兜底）、去重键、订阅与清理、回补边界
