@@ -99,13 +99,17 @@ test('导出的 inject 必须含 "slots"（漏了会静默消失）', () => {
   assert.ok(mod.inject.includes('slots'), `inject 必须含 "slots"，实际 ${JSON.stringify(mod.inject)}`)
 })
 
-test('apply 往两个插槽各注册一个组件', () => {
+test('apply 往三个插槽各注册一个组件（含始终可见的侧边栏底部）', () => {
   const mod = factoryOf()
   const { ctx, recorded } = fakeCtx()
   mod.apply(ctx)
-  assert.equal(recorded.registered.length, 2, `应当注册 2 处，实际 ${recorded.registered.length}`)
+  assert.equal(recorded.registered.length, 3, `应当注册 3 处，实际 ${recorded.registered.length}`)
   const names = recorded.registered.map((r) => r.options.name).sort()
-  assert.deepEqual(names, ['conversation.composer.dock', 'conversation.session.header.actions'])
+  assert.deepEqual(names, [
+    'conversation.composer.dock',
+    'conversation.session.header.actions',
+    'sidebar.footer.action',
+  ])
   for (const entry of recorded.registered) {
     assert.equal(typeof entry.component, 'function', '组件必须是函数')
     assert.ok(entry.options.id.length > 0, '插槽条目必须有唯一 id')
