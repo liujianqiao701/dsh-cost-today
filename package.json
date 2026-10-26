@@ -1,6 +1,6 @@
 {
     "name":  "dsh-cost-today",
-    "version":  "0.2.0",
+    "version":  "0.4.0",
     "type":  "module",
     "description":  "DSH 今日花费插件：读 dsh-cost-meter 的账本，把「今天花了多少钱」显示在输入框下方与会话头部，并给出调用次数、输入/缓存命中/输出 token、按模型与会话的拆分；含 cost_today 工具、/cost 命令与 GUI 面板数据接口。金额沿用 cost-meter 的官方单价与 UTC 峰谷规则，本插件只做本地日汇总与币种换算。",
     "keywords":  [
@@ -30,7 +30,7 @@
                   "README.md"
               ],
     "scripts":  {
-                    "test":  "node test/ledger.test.mjs \u0026\u0026 node test/client.test.mjs"
+                    "test":  "node test/ledger.test.mjs \u0026\u0026 node test/pricing.test.mjs \u0026\u0026 node test/meter.test.mjs \u0026\u0026 node test/store.test.mjs \u0026\u0026 node test/capture.test.mjs \u0026\u0026 node test/client.test.mjs"
                 },
     "dsh":  {
                 "bundle":  {
