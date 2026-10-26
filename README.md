@@ -122,7 +122,7 @@ npm install "link:<本仓库路径>"
 
 ## 测试
 
-`npm test` 跑全部 62 项（node:test，零依赖）：
+`npm test` 跑全部 65 项（node:test，零依赖）：
 
 ```bash
 node test/ledger.test.mjs    # 12 项：时区、币种换算、命中率、今日/本月/累计、缺数据、格式化
@@ -130,6 +130,7 @@ node test/pricing.test.mjs   # 11 项：官方单价、峰谷窗口边界、周�
 node test/meter.test.mjs     # 11 项：去重、日记录累加、幂等导入、外部计量器复活
 node test/store.test.mjs     #  8 项：建账本、导入一次、坏文件、原子写、端到端
 node test/capture.test.mjs   # 14 项：usage 取法（含 stream 兜底）、去重键、订阅与清理、回补边界
+node test/cursor.test.mjs    #  3 项：回补游标不被后续记账覆盖（回归）
 node test/client.test.mjs    #  6 项：模块 ABI、inject、三个插槽注册、只依赖 react
 ```
 
