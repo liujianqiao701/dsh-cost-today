@@ -155,6 +155,58 @@ test('summarize 容忍账本字段缺失/类型不对', () => {
   assert.deepEqual(s.models, [])
 })
 
+/** 多天、跨月的账本 —— 用来钉住「本月 / 累计」的加总口径。 */
+function multiDayFixture() {
+  const base = fixture()
+  base.days = {
+    // 故意混一个不是日期的键：它要是被算进累计，用户看到的总额就偏大了
+    'not-a-date': { cost: 999, calls: 999 },
+    '2026-09-30': { date: '2026-09-30', input: 100, output: 10, cacheRead: 0, calls: 10, cost: 1 },
+    '2026-10-01': { date: '2026-10-01', input: 200, output: 20, cacheRead: 0, calls: 20, cost: 2 },
+    '2026-10-26': { date: '2026-10-26', input: 17340289, output: 139021, cacheRead: 6614272, calls: 160, cost: 5.408597532 },
+  }
+  return base
+}
+
+test('summarize 算累计与本月：只认日期键，跨月分开', () => {
+  const s = summarize(multiDayFixture(), { dayKey: '2026-10-26' })
+  // 累计 = 1 + 2 + 5.408597532 = 8.408597532 USD（'not-a-date' 的 999 不计入）
+  assert.equal(s.total.days, 3)
+  assert.ok(Math.abs(s.total.costUsd - 8.408597532) < 1e-9, `累计 USD 应为 8.408597532，实际 ${s.total.costUsd}`)
+  assert.ok(Math.abs(s.total.cost - 8.408597532 * 7.2) < 1e-6, `累计 CNY 应为 ${8.408597532 * 7.2}，实际 ${s.total.cost}`)
+  assert.equal(s.total.calls, 190)
+  assert.equal(s.total.since, '2026-09-30')
+  assert.equal(s.total.until, '2026-10-26')
+
+  // 本月只算 2026-10 的两天
+  assert.equal(s.month.monthKey, '2026-10')
+  assert.equal(s.month.days, 2)
+  assert.ok(Math.abs(s.month.costUsd - 7.408597532) < 1e-9)
+
+  // 保留天数照 config 带出来
+  assert.equal(s.retentionDays, null, '夹具 config 没写 historyDays，应为 null')
+  const withRetention = multiDayFixture()
+  withRetention.config.historyDays = 180
+  assert.equal(summarize(withRetention, { dayKey: '2026-10-26' }).retentionDays, 180)
+})
+
+test('今天没用量时，累计仍然算得出来', () => {
+  const s = summarize(multiDayFixture(), { dayKey: '2026-10-20' })
+  assert.equal(s.hasData, false)
+  assert.equal(s.cost, 0)
+  assert.equal(s.total.days, 3, '没有今天的数据时，累计不该跟着变空')
+  assert.ok(s.total.cost > 60)
+})
+
+test('账本没有任何日期键时，累计为零而不是报错', () => {
+  const s = summarize({ config: {}, days: { 'not-a-date': { cost: 5 } } }, { dayKey: '2026-10-26' })
+  assert.equal(s.total.days, 0)
+  assert.equal(s.total.cost, 0)
+  assert.equal(s.total.since, null)
+  assert.equal(s.month.days, 0)
+})
+
+
 test('collect 读真实文件；文件不存在时返回 ok:false 而不是抛', () => {
   const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'cost-today-'))
   const file = path.join(dir, 'ledger.json')
