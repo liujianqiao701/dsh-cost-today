@@ -1,0 +1,52 @@
+{
+  "name": "dsh-cost-today",
+  "version": "0.1.0",
+  "type": "module",
+  "description": "DSH 今日花费插件：读 dsh-cost-meter 的账本，把「今天花了多少钱」显示在输入框下方与会话头部，并给出调用次数、输入/缓存命中/输出 token、按模型与会话的拆分；含 cost_today 工具、/cost 命令与 GUI 面板数据接口。金额沿用 cost-meter 的官方单价与 UTC 峰谷规则，本插件只做本地日汇总与币种换算。",
+  "keywords": [
+    "deepseek-harness",
+    "dsh",
+    "dsh-plugin",
+    "cordis",
+    "cost",
+    "billing",
+    "spend",
+    "token",
+    "usage"
+  ],
+  "author": "liujianqiao",
+  "license": "MIT",
+  "main": "lib/index.js",
+  "exports": {
+    ".": "./lib/index.js",
+    "./ledger": "./lib/ledger.js",
+    "./client": "./lib/client.js",
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "lib",
+    "test",
+    "cordis.patch.yml",
+    "README.md"
+  ],
+  "scripts": {
+    "test": "node test/ledger.test.mjs && node test/client.test.mjs"
+  },
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    },
+    "client": {
+      "platform": "web",
+      "inject": [
+        "@deepseek-ai/dsh-client-ui-slots"
+      ]
+    },
+    "engines": {
+      "dsh": "*"
+    }
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}
